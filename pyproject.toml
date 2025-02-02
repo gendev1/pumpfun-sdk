@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "pumpfun-sdk"
+version = "0.1.0"
+description = "SDK for pump.fun"
+authors = ["Generalist Dev <hello@generalist.dev>"]
+readme = "README.md"
+packages = [{include = "pumpfun_sdk"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+solders = "*"
+solana = "^0.36.3"
+websockets = ">=9.0,<=13.1"
+construct = "2.10.68"
+construct-typing = ">=0.5.2,<0.6.0"
+asyncio = "^3.4.3"
+base58 = "^2.1.1"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.0"
+pytest-asyncio = "^0.21.1"
+pytest-cov = "^4.0.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
