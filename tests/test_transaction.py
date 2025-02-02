@@ -15,6 +15,7 @@ from pumpfun_sdk.transaction import (
     load_transaction,
     AccountMeta
 )
+from pumpfun_sdk.idl import load_pump_idl
 
 @pytest.fixture
 def mock_keypair():
@@ -23,6 +24,10 @@ def mock_keypair():
 @pytest.fixture
 def mock_pubkey():
     return Pubkey.new_unique()
+
+@pytest.fixture
+def default_idl():
+    return load_pump_idl()
 
 @pytest.mark.asyncio
 async def test_build_buy_transaction(mock_keypair, mock_pubkey):
@@ -56,16 +61,13 @@ def test_get_instruction_discriminator():
     # The function is deterministic
     assert get_instruction_discriminator(test_name) == discriminator
 
-def test_get_instruction_name():
-    mock_idl = {
-        "instructions": [
-            {"name": "test_instruction"}
-        ]
-    }
-    discriminator = get_instruction_discriminator("test_instruction")
+def test_get_instruction_name(default_idl):
+    # Get a real instruction name from the default IDL
+    instruction_name = default_idl["instructions"][0]["name"]
+    discriminator = get_instruction_discriminator(instruction_name)
     mock_data = discriminator + b"additional_data"
-    name = get_instruction_name(mock_idl, mock_data)
-    assert name == "test_instruction"
+    name = get_instruction_name(default_idl, mock_data)
+    assert name == instruction_name
 
 def test_get_instruction_name_unknown():
     mock_idl = {"instructions": []}
@@ -99,18 +101,12 @@ async def test_build_buy_transaction_zero_amount():
             amount=0
         )
 
-def test_decode_transaction_with_instructions():
-    # Create a mock transaction with instructions
+def test_decode_transaction_with_instructions(default_idl):
     mock_tx_data = {
         'transaction': [base64.b64encode(b'test_data').decode('utf-8')]
     }
-    mock_idl = {
-        'instructions': [
-            {'name': 'test_instruction'}
-        ]
-    }
+    
     with patch('solders.transaction.VersionedTransaction.from_bytes') as mock_from_bytes:
-        # Create a proper mock instruction with bytes data.
         mock_instruction = Mock()
         mock_instruction.data = b'test_instruction_data'
         mock_instruction.program_id_index = 0
@@ -120,7 +116,7 @@ def test_decode_transaction_with_instructions():
         mock_transaction.message.account_keys = [Pubkey.new_unique()]
         mock_from_bytes.return_value = mock_transaction
         
-        result = decode_transaction(mock_tx_data, mock_idl)
+        result = decode_transaction(mock_tx_data, default_idl)
         assert isinstance(result, list)
         assert len(result) > 0
         assert 'programId' in result[0]

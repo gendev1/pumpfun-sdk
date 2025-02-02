@@ -1,6 +1,6 @@
 # PumpFun SDK
 
-A Python SDK for interacting with the Pump.fun protocol on Solana. This SDK simplifies token trading, on-chain event monitoring, transaction analysis, and bonding curve state processing.
+PumpFun SDK is a Python toolkit for interacting with the Pump.fun protocol on the Solana blockchain. This SDK provides modules for building transactions, monitoring on-chain events, decoding transactions with IDL support, and analyzing bonding curve states.
 
 ## Table of Contents
 
@@ -18,14 +18,14 @@ A Python SDK for interacting with the Pump.fun protocol on Solana. This SDK simp
 
 ## Features
 
--   **Transaction Building:** Create buy and sell transactions for Pump tokens.
--   **On-Chain Monitoring:** Subscribe to program events and monitor new token creations.
--   **Transaction Analysis:** Decode and analyze transactions using provided IDLs.
--   **Bonding Curve Analysis:** Calculate prices and analyze bonding curve states.
+-   **Transaction Building:** Create buy and sell transactions with pre-defined instruction discriminators.
+-   **On-Chain Monitoring:** Subscribe to logs and account updates via websockets.
+-   **Transaction Analysis:** Decode and analyze transactions using a provided IDL.
+-   **Bonding Curve Analysis:** Parse on-chain bonding curve state and compute token prices.
 
 ## Installation
 
-Install the SDK via pip:
+Install the SDK using pip:
 
 ```bash
 pip install pumpfun-sdk
@@ -35,37 +35,68 @@ pip install pumpfun-sdk
 
 ### Basic Usage
 
-Below is a simple example that retrieves and prints the bonding curve state for a given token mint.
+This simple example demonstrates how to retrieve the bonding curve state for a token and monitor events for new token creations.
 
 ```python
-import asyncio
-from pumpfun_sdk.utils import process_bonding_curve_state
+#!/usr/bin/env python
+"""
+Basic Usage Example for pumpfun_sdk.
 
-async def check_token_status(mint_address: str):
+This script demonstrates how to:
+- Retrieve and analyze the bonding curve state of a token.
+- Monitor on-chain events for new token creations.
+"""
+
+import asyncio
+from pumpfun_sdk.utils import subscribe_to_events, process_bonding_curve_state, monitor_new_tokens
+
+async def example_check_token_status(mint_address: str):
     try:
-        # Get and analyze the bonding curve state
         analysis = await process_bonding_curve_state(mint_address)
         print("Token Analysis:")
         for key, value in analysis.items():
             print(f"{key}: {value}")
     except Exception as e:
-        print(f"Error: {e}")
+        print(f"Error checking token status: {e}")
 
-# Run the example
-asyncio.run(check_token_status("YourTokenMintAddress"))
+async def example_monitor_new_tokens():
+    async def token_handler(event_data):
+        if 'result' in event_data and 'value' in event_data['result']:
+            logs = event_data['result']['value'].get('logs', [])
+            if logs:
+                print("New Token Creation Detected!")
+                for log in logs:
+                    print(log)
+    print("Starting token monitoring...")
+    await monitor_new_tokens(callback=token_handler)
+
+async def main():
+    await example_check_token_status("YourTokenMintAddress")
+    await example_monitor_new_tokens()
+
+if __name__ == "__main__":
+    asyncio.run(main())
 ```
 
 ### Building Transactions
 
-The SDK allows you to build transactions for buying or selling tokens. Replace the placeholder addresses with actual ones.
+This example shows how to build buy and sell transactions.
 
 ```python
+#!/usr/bin/env python
+"""
+Trading Example for pumpfun_sdk.
+
+This script demonstrates how to build buy and sell transactions for a Pump token.
+"""
+
+import asyncio
 from solders.keypair import Keypair
 from solders.pubkey import Pubkey
 from pumpfun_sdk.transaction import build_buy_transaction, build_sell_transaction
 
 async def example_transactions():
-    # Create test keypair (replace with your actual keypair)
+    # Create a test keypair (replace with your actual keypair)
     payer = Keypair()
 
     # Example addresses (replace with actual addresses)
@@ -73,7 +104,8 @@ async def example_transactions():
     bonding_curve = Pubkey.new_unique()
     associated_bonding_curve = Pubkey.new_unique()
 
-    # Build buy transaction (0.1 SOL amount)
+    # Build a buy transaction (0.1 SOL amount)
+    print("=== Building Buy Transaction ===")
     buy_tx = await build_buy_transaction(
         payer=payer,
         mint=mint,
@@ -81,10 +113,11 @@ async def example_transactions():
         associated_bonding_curve=associated_bonding_curve,
         amount=0.1
     )
-    print("Buy Transaction built:")
+    print("Buy Transaction:")
     print(buy_tx)
 
-    # Build sell transaction (100 token amount)
+    # Build a sell transaction (100 tokens)
+    print("=== Building Sell Transaction ===")
     sell_tx = await build_sell_transaction(
         payer=payer,
         mint=mint,
@@ -92,21 +125,34 @@ async def example_transactions():
         associated_bonding_curve=associated_bonding_curve,
         amount=100
     )
-    print("Sell Transaction built:")
+    print("Sell Transaction:")
     print(sell_tx)
 
-# To run the example:
-# asyncio.run(example_transactions())
+async def main():
+    await example_transactions()
+
+if __name__ == "__main__":
+    asyncio.run(main())
 ```
 
 ### Monitoring Events
 
-Subscribe to on-chain events to monitor your program activity.
+This example subscribes to on-chain log events for the Pump program.
 
 ```python
+#!/usr/bin/env python
+"""
+Monitoring Example for pumpfun_sdk.
+
+This script demonstrates how to subscribe to on-chain log events using
+the subscribe_to_events function.
+"""
+
+import asyncio
+from pumpfun_sdk import PUMP_PROGRAM
 from pumpfun_sdk.utils import subscribe_to_events
 
-async def monitor_program_activity(program_id: str):
+async def monitor_program_activity():
     async def activity_handler(event_data):
         if 'result' in event_data and 'value' in event_data['result']:
             logs = event_data['result']['value'].get('logs', [])
@@ -114,77 +160,89 @@ async def monitor_program_activity(program_id: str):
                 print("Program Activity Detected!")
                 for log in logs:
                     print(log)
-
+    print(f"Starting monitoring for program: {PUMP_PROGRAM}")
     await subscribe_to_events(
-        program_id=program_id,
+        program_id=str(PUMP_PROGRAM),
         callback=activity_handler,
         subscription_type='logs'
     )
 
-# Usage:
-# asyncio.run(monitor_program_activity("YourProgramID"))
+if __name__ == "__main__":
+    asyncio.run(monitor_program_activity())
 ```
 
 ### Transaction Analysis
 
-Decode transactions using an IDL file.
+This example demonstrates how to decode a transaction using a provided IDL file. The SDK now uses `load_pump_idl` from `pumpfun_sdk.idl` for loading IDL definitions.
 
 ```python
+#!/usr/bin/env python
+"""
+Transaction Analysis Example for pumpfun_sdk.
+
+This script demonstrates how to:
+- Load a raw transaction from a file.
+- Decode the transaction using a provided IDL.
+- Print the decoded instructions.
+"""
+
+import asyncio
 from pumpfun_sdk.utils import decode_transaction_from_file
+from pumpfun_sdk.idl import load_pump_idl
 
 async def analyze_transaction():
-    await decode_transaction_from_file(
-        tx_file="path/to/transaction.json",
-        idl_file="path/to/idl.json"
-    )
+    # Replace these with actual file paths
+    tx_file = "path/to/transaction.json"
+    idl_file = "path/to/idl.json"
 
-# Usage:
-# asyncio.run(analyze_transaction())
+    print("=== Analyzing Transaction ===")
+    try:
+        # This function uses the custom IDL file if provided, otherwise falls back to the built-in Pump Fun IDL.
+        await decode_transaction_from_file(tx_file, idl_file)
+    except Exception as e:
+        print(f"Error analyzing transaction: {e}")
+
+if __name__ == "__main__":
+    asyncio.run(analyze_transaction())
 ```
 
 ## Examples
 
-Check the `examples/` directory for more detailed examples:
+Detailed examples can be found in the `examples/` directory:
 
--   **basic_usage.py:** Basic SDK usage examples.
--   **monitoring_example.py:** Program activity monitoring.
--   **trading_example.py:** Building buy/sell transactions.
--   **transaction_analysis.py:** Transaction decoding and analysis.
+-   **basic_usage.py:** Basic utilization including bonding curve analysis and event monitoring.
+-   **monitoring_example.py:** Subscribing to on-chain log events.
+-   **trading_example.py:** Building buy and sell transactions.
+-   **transaction_analysis.py:** Decoding transaction data using IDL support.
 
 ## Development
 
 ### Setup
 
-1. Clone the repository:
+1. **Clone the Repository:**
 
-```bash
-git clone https://github.com/gendev1/pumpfun-sdk.git
-cd pumpfun-sdk
-```
+    ```bash
+    git clone https://github.com/yourusername/pumpfun-sdk.git
+    cd pumpfun-sdk
+    ```
 
-2. Install dependencies:
+2. **Install Dependencies:**
 
-```bash
-poetry install
-```
+    ```bash
+    poetry install
+    ```
 
 ### Testing
 
-Run the test suite:
+Run the test suite and check coverage:
 
 ```bash
-poetry run pytest
-```
-
-For test coverage:
-
-```bash
-poetry run pytest --cov
+poetry run pytest --cov=pumpfun_sdk --cov-report=term-missing
 ```
 
 ## Contributing
 
-Contributions are welcome! Please follow these steps:
+Contributions are welcome! To contribute:
 
 1. Fork the repository.
 2. Create your feature branch:
@@ -193,9 +251,9 @@ Contributions are welcome! Please follow these steps:
     ```
 3. Commit your changes:
     ```bash
-    git commit -m 'Add some feature'
+    git commit -m 'Add feature'
     ```
-4. Push to the branch:
+4. Push your branch:
     ```bash
     git push origin feature/your-feature
     ```
@@ -203,4 +261,4 @@ Contributions are welcome! Please follow these steps:
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the [MIT License](LICENSE).

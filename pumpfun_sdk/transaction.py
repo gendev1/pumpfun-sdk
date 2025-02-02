@@ -19,6 +19,7 @@ from pumpfun_sdk.config import (
 )
 from solders.message import Message
 from solders.hash import Hash
+from pumpfun_sdk.idl import load_pump_idl
 
 # Instead of inheriting, create a function to convert to SoldersAccountMeta
 class AccountMeta:
@@ -61,15 +62,20 @@ def decode_transaction(tx_data: dict, idl: dict = None) -> list:
     Decode a versioned transaction and extract its instructions.
     
     :param tx_data: A dictionary containing base64-encoded transaction data. 
-                    It must include a "transaction" key with the encoded transaction(s).
+                   It must include a "transaction" key with the encoded transaction(s).
     :param idl: Optional dictionary representing the Interface Definition Language 
-                used to decode instructions.
+               used to decode instructions. If not provided, uses the built-in Pump Fun IDL.
     :return: A list of decoded instructions. Each instruction is represented as a
              dictionary containing keys such as 'programId', 'instruction_name', 'data', and 'accounts'.
     :raises ValueError: If the transaction data is invalid.
     """
     if not isinstance(tx_data, dict) or 'transaction' not in tx_data:
         raise ValueError("Invalid transaction data")
+
+    # Use built-in IDL if none provided
+    if idl is None:
+        idl = load_pump_idl()
+
     # Decode the base64-encoded transaction
     tx_data_decoded = base64.b64decode(tx_data['transaction'][0])
     transaction = VersionedTransaction.from_bytes(tx_data_decoded)

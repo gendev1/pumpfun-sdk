@@ -1,9 +1,8 @@
 import pytest
 import json
 import asyncio
-from unittest.mock import Mock, patch, AsyncMock
+from unittest.mock import Mock, patch, AsyncMock, mock_open
 from pumpfun_sdk.utils import (
-    load_idl,
     subscribe_to_events,
     process_bonding_curve_state,
     monitor_new_tokens,
@@ -12,6 +11,15 @@ from pumpfun_sdk.utils import (
     decode_transaction_from_file,
     process_block_data
 )
+from pumpfun_sdk.idl import load_pump_idl
+
+@pytest.fixture
+def mock_idl():
+    return {
+        "version": "0.1.0",
+        "name": "test_program",
+        "instructions": []
+    }
 
 @pytest.fixture
 def mock_idl_file(tmp_path):
@@ -21,19 +29,8 @@ def mock_idl_file(tmp_path):
         "instructions": []
     }
     file_path = tmp_path / "test_idl.json"
-    with open(file_path, 'w') as f:
-        json.dump(idl_data, f)
+    file_path.write_text(json.dumps(idl_data))
     return file_path
-
-def test_load_idl(mock_idl_file):
-    idl = load_idl(mock_idl_file)
-    assert idl["version"] == "0.1.0"
-    assert idl["name"] == "test_program"
-    assert "instructions" in idl
-
-def test_load_idl_invalid_file():
-    with pytest.raises(FileNotFoundError):
-        load_idl("nonexistent_file.json")
 
 @pytest.mark.asyncio
 async def test_subscribe_to_events():
@@ -171,20 +168,26 @@ async def test_example_subscribe_to_logs():
 @pytest.mark.asyncio
 async def test_decode_transaction_from_file():
     mock_tx_data = {"test": "data"}
-    mock_idl = {"instructions": []}
     
-    with patch('pumpfun_sdk.utils.load_idl') as mock_load_idl, \
-         patch('pumpfun_sdk.utils.load_transaction') as mock_load_tx, \
+    with patch('pumpfun_sdk.utils.load_transaction') as mock_load_tx, \
          patch('pumpfun_sdk.utils.decode_transaction') as mock_decode:
         
-        mock_load_idl.return_value = mock_idl
         mock_load_tx.return_value = mock_tx_data
         mock_decode.return_value = [{"instruction": "test"}]
         
-        await decode_transaction_from_file("test.json", "idl.json")
-        mock_load_idl.assert_called_once()
+        # Test without custom IDL file
+        await decode_transaction_from_file("test.json")
         mock_load_tx.assert_called_once()
         mock_decode.assert_called_once()
+
+        # Test with custom IDL file
+        mock_load_tx.reset_mock()
+        mock_decode.reset_mock()
+        
+        with patch("builtins.open", new_callable=mock_open, read_data='{"custom": "idl"}'):
+            await decode_transaction_from_file("test.json", "custom_idl.json")
+            mock_load_tx.assert_called_once()
+            mock_decode.assert_called_once()
 
 @pytest.mark.asyncio
 async def test_process_block_data():
@@ -306,4 +309,12 @@ async def test_subscribe_to_events_account_subscription():
         mock_ws.send.assert_called_once()
         sent_data = json.loads(mock_ws.send.call_args[0][0])
         assert sent_data["method"] == "accountSubscribe"
-        assert sent_data["params"][0] == "test_program" 
+        assert sent_data["params"][0] == "test_program"
+
+def test_load_pump_idl():
+    idl = load_pump_idl()
+    # Verify that the returned IDL is a dict with the expected keys.
+    assert isinstance(idl, dict)
+    assert "version" in idl
+    assert "name" in idl
+    assert "instructions" in idl 

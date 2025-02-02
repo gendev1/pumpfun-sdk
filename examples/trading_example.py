@@ -1,3 +1,10 @@
+#!/usr/bin/env python
+"""
+Trading Example for pumpfun_sdk.
+
+This script demonstrates how to build buy and sell transactions for a Pump token.
+"""
+
 import asyncio
 from solders.keypair import Keypair
 from solders.pubkey import Pubkey
@@ -87,7 +94,7 @@ async def example_sell_tokens(
         await client.close()
 
 async def example_transactions():
-    # Create test keypair (in practice, load your actual keypair)
+    # Create test keypair (replace with your actual keypair)
     payer = Keypair()
     
     # Example addresses (replace with actual addresses)
@@ -95,9 +102,9 @@ async def example_transactions():
     bonding_curve = Pubkey.new_unique()
     associated_bonding_curve = Pubkey.new_unique()
     
-    # Example buy transaction
+    # Build buy transaction (0.1 SOL amount)
     print("\n=== Building Buy Transaction ===")
-    buy_amount = 0.1  # SOL
+    buy_amount = 0.1
     buy_tx = await build_buy_transaction(
         payer=payer,
         mint=mint,
@@ -105,11 +112,12 @@ async def example_transactions():
         associated_bonding_curve=associated_bonding_curve,
         amount=buy_amount
     )
-    print(f"Buy transaction built for {buy_amount} SOL")
+    print(f"Buy transaction built for {buy_amount} SOL:")
+    print(buy_tx)
     
-    # Example sell transaction
+    # Build sell transaction (100 token amount)
     print("\n=== Building Sell Transaction ===")
-    sell_amount = 100  # Token amount
+    sell_amount = 100
     sell_tx = await build_sell_transaction(
         payer=payer,
         mint=mint,
@@ -117,7 +125,8 @@ async def example_transactions():
         associated_bonding_curve=associated_bonding_curve,
         amount=sell_amount
     )
-    print(f"Sell transaction built for {sell_amount} tokens")
+    print(f"Sell transaction built for {sell_amount} tokens:")
+    print(sell_tx)
 
 async def main():
     try:

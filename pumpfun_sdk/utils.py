@@ -8,16 +8,7 @@ from pumpfun_sdk.transaction import load_transaction, decode_transaction
 from pumpfun_sdk.pump_curve import BondingCurveState, calculate_bonding_curve_price
 from pumpfun_sdk.analytics import analyze_curve_state, print_analysis
 from pumpfun_sdk.config import PUMP_PROGRAM, WSS_ENDPOINT
-
-def load_idl(file_path: str) -> dict:
-    """
-    Load and return the JSON IDL from the provided file path.
-    
-    :param file_path: Path to the IDL JSON file.
-    :return: Parsed IDL as a dictionary.
-    """
-    with open(file_path, 'r') as f:
-        return json.load(f)
+from pumpfun_sdk.idl import load_pump_idl, load_raydium_idl
 
 async def subscribe_to_events(program_id: str, callback, endpoint: str = None, subscription_type: str = 'account'):
     """Subscribe to on-chain events for a given program."""
@@ -89,14 +80,19 @@ async def process_bonding_curve_state(bonding_curve_account: str):
     finally:
         await client.close()
 
-async def decode_transaction_from_file(file_path: str, idl_file: str):
+async def decode_transaction_from_file(file_path: str, idl_file: str = None):
     """
     Load a raw transaction from file, decode it using the provided IDL, and print the instructions.
     
     :param file_path: Path to the JSON file containing raw transaction data.
-    :param idl_file: Path to the IDL JSON file.
+    :param idl_file: Optional path to a custom IDL JSON file. If not provided, uses the built-in Pump Fun IDL.
     """
-    idl = load_idl(idl_file)
+    if idl_file:
+        with open(idl_file, 'r') as f:
+            idl = json.load(f)
+    else:
+        idl = load_pump_idl()
+    
     tx_data = load_transaction(file_path)
     instructions = decode_transaction(tx_data, idl)
     print("Decoded Transaction Instructions:")

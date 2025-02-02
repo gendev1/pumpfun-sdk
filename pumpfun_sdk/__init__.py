@@ -43,10 +43,10 @@ from .transaction import (
     build_sell_transaction,
 )
 from .utils import (
-    load_idl,
     subscribe_to_events,
     process_bonding_curve_state,
 )
+from .idl import load_pump_idl, load_raydium_idl
 
 # Import configuration
 from .config import (
@@ -72,7 +72,6 @@ __all__ = [
     "AccountMeta",
     "build_buy_transaction",
     "build_sell_transaction",
-    "load_idl",
     "subscribe_to_events",
     "process_bonding_curve_state",
     
@@ -83,4 +82,8 @@ __all__ = [
     "PUMP_LIQUIDITY_MIGRATOR",
     "LAMPORTS_PER_SOL",
     "TOKEN_DECIMALS",
+    
+    # IDL functions
+    "load_pump_idl",
+    "load_raydium_idl",
 ]

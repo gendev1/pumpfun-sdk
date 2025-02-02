@@ -1,3 +1,11 @@
+#!/usr/bin/env python
+"""
+Monitoring Example for pumpfun_sdk.
+
+This script demonstrates how to subscribe to on-chain log events using
+the subscribe_to_events function.
+"""
+
 import asyncio
 from pumpfun_sdk import PUMP_PROGRAM
 from pumpfun_sdk.utils import subscribe_to_events

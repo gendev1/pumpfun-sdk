@@ -1,13 +1,18 @@
+#!/usr/bin/env python
+"""
+Basic Usage Example for pumpfun_sdk.
+
+This script demonstrates how to:
+- Retrieve and analyze the bonding curve state of a token.
+- Monitor on-chain events for new token creations.
+"""
+
 import asyncio
 import json
 from pumpfun_sdk.client import SolanaClient
 from pumpfun_sdk.pump_curve import BondingCurveState
-from pumpfun_sdk.utils import (
-    load_idl,
-    subscribe_to_events,
-    process_bonding_curve_state,
-    monitor_new_tokens
-)
+from pumpfun_sdk.utils import subscribe_to_events, process_bonding_curve_state, monitor_new_tokens
+from pumpfun_sdk.idl import load_pump_idl
 
 async def example_check_token_status(mint_address: str):
     """Check the status of a token's bonding curve."""
@@ -25,7 +30,7 @@ async def example_check_token_status(mint_address: str):
         print(f"Error checking token status: {e}")
 
 async def example_monitor_new_tokens():
-    """Monitor for new token creations with custom callback."""
+    """Monitor for new token creations with a custom callback."""
     async def token_handler(event_data):
         if 'result' in event_data and 'value' in event_data['result']:
             logs = event_data['result']['value'].get('logs', [])
