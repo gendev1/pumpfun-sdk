@@ -8,6 +8,8 @@ PumpFun SDK is a Python toolkit for interacting with the Pump.fun protocol on th
 -   [Installation](#installation)
 -   [Quick Start](#quick-start)
     -   [Basic Usage](#basic-usage)
+    -   [Token Operations](#token-operations)
+    -   [User Operations](#user-operations)
     -   [Building Transactions](#building-transactions)
     -   [Monitoring Events](#monitoring-events)
     -   [Transaction Analysis](#transaction-analysis)
@@ -22,6 +24,8 @@ PumpFun SDK is a Python toolkit for interacting with the Pump.fun protocol on th
 -   **On-Chain Monitoring:** Subscribe to logs and account updates via websockets.
 -   **Transaction Analysis:** Decode and analyze transactions using a provided IDL.
 -   **Bonding Curve Analysis:** Parse on-chain bonding curve state and compute token prices.
+-   **Token Operations:** Retrieve token information, prices, holders, transactions, and liquidity.
+-   **User Operations:** Track user's created tokens, trading history, and liquidity positions.
 
 ## Installation
 
@@ -73,6 +77,114 @@ async def example_monitor_new_tokens():
 async def main():
     await example_check_token_status("YourTokenMintAddress")
     await example_monitor_new_tokens()
+
+if __name__ == "__main__":
+    asyncio.run(main())
+```
+
+### Token Operations
+
+This example shows how to interact with token-related functionality.
+
+```python
+#!/usr/bin/env python
+"""
+Token Operations Example for pumpfun_sdk.
+
+This script demonstrates how to:
+- Get token information and metadata
+- Get token price and market cap
+- Get token holders
+- Get token transactions
+- Get token liquidity
+"""
+
+import asyncio
+from pumpfun_sdk.usecases.token import (
+    get_token_info,
+    get_token_price,
+    get_token_holders,
+    get_token_transactions,
+    get_token_liquidity
+)
+
+async def example_token_operations(mint_address: str):
+    # Get comprehensive token information
+    token_info = await get_token_info(mint_address)
+    print("Token Info:", token_info)
+
+    # Get current token price
+    price = await get_token_price(mint_address)
+    print("Current Price:", price)
+
+    # Get token holders
+    holders = await get_token_holders(mint_address)
+    print("Token Holders:", holders)
+
+    # Get recent transactions
+    transactions = await get_token_transactions(mint_address, limit=10)
+    print("Recent Transactions:", transactions)
+
+    # Get liquidity information
+    liquidity = await get_token_liquidity(mint_address)
+    print("Liquidity Info:", liquidity)
+
+async def main():
+    await example_token_operations("YourTokenMintAddress")
+
+if __name__ == "__main__":
+    asyncio.run(main())
+```
+
+### User Operations
+
+This example demonstrates how to track user activity and positions.
+
+```python
+#!/usr/bin/env python
+"""
+User Operations Example for pumpfun_sdk.
+
+This script demonstrates how to:
+- Get tokens created by a user
+- Get tokens bought by a user
+- Get tokens sold by a user
+- Get user's liquidity positions
+- Get user's transaction history
+"""
+
+import asyncio
+from pumpfun_sdk.usecases.user import (
+    get_user_created_tokens,
+    get_user_bought_tokens,
+    get_user_sold_tokens,
+    get_user_liquidity,
+    get_user_transactions
+)
+
+async def example_user_operations(user_address: str):
+    # Get tokens created by the user
+    created_tokens = await get_user_created_tokens(user_address)
+    print("Created Tokens:", created_tokens)
+
+    # Get tokens bought by the user
+    bought_tokens = await get_user_bought_tokens(user_address)
+    print("Bought Tokens:", bought_tokens)
+
+    # Get tokens sold by the user
+    sold_tokens = await get_user_sold_tokens(user_address)
+    print("Sold Tokens:", sold_tokens)
+
+    # Get user's current liquidity positions
+    liquidity = await get_user_liquidity(user_address)
+    print("Liquidity Positions:", liquidity)
+
+    # Get user's recent transactions
+    transactions = await get_user_transactions(user_address, limit=10)
+    print("Recent Transactions:", transactions)
+
+async def main():
+    await example_user_operations("YourWalletAddress")
 
 if __name__ == "__main__":
     asyncio.run(main())
@@ -211,6 +323,8 @@ if __name__ == "__main__":
 Detailed examples can be found in the `examples/` directory:
 
 -   **basic_usage.py:** Basic utilization including bonding curve analysis and event monitoring.
+-   **token_operations.py:** Working with token information and analysis.
+-   **user_operations.py:** Tracking user activity and positions.
 -   **monitoring_example.py:** Subscribing to on-chain log events.
 -   **trading_example.py:** Building buy and sell transactions.
 -   **transaction_analysis.py:** Decoding transaction data using IDL support.
