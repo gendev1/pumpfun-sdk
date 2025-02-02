@@ -27,9 +27,13 @@ BUY_AMOUNT = 0.0001  # Amount of SOL to spend when buying
 BUY_SLIPPAGE = 0.2  # 20% slippage tolerance for buying
 SELL_SLIPPAGE = 0.2  # 20% slippage tolerance for selling
 
-# Instruction discriminators
-BUY_DISCRIMINATOR = sha256(("global:buy").encode("utf-8")).digest()[:8]
-SELL_DISCRIMINATOR = sha256(("global:sell").encode("utf-8")).digest()[:8]
+# Instruction discriminators based on IDL instruction names
+INITIALIZE_DISCRIMINATOR = sha256(b"global:initialize").digest()[:8]
+SET_PARAMS_DISCRIMINATOR = sha256(b"global:setParams").digest()[:8]
+CREATE_DISCRIMINATOR = sha256(b"global:create").digest()[:8]
+BUY_DISCRIMINATOR = sha256(b"global:buy").digest()[:8]
+SELL_DISCRIMINATOR = sha256(b"global:sell").digest()[:8]
+WITHDRAW_DISCRIMINATOR = sha256(b"global:withdraw").digest()[:8]
 
 # Default endpoints (can be overridden by environment variables)
 DEFAULT_RPC_ENDPOINT = "https://api.mainnet-beta.solana.com"
