@@ -222,7 +222,7 @@ Detailed examples can be found in the `examples/` directory:
 1. **Clone the Repository:**
 
     ```bash
-    git clone https://github.com/yourusername/pumpfun-sdk.git
+    git clone https://github.com/gendev1/pumpfun-sdk.git
     cd pumpfun-sdk
     ```
 
