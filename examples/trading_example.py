@@ -6,13 +6,11 @@ This script demonstrates how to build buy and sell transactions for a Pump token
 """
 
 import asyncio
+
 from solders.keypair import Keypair
 from solders.pubkey import Pubkey
-from pumpfun_sdk import (
-    SolanaClient,
-    PUMP_PROGRAM,
-    LAMPORTS_PER_SOL,
-)
+
+from pumpfun_sdk import LAMPORTS_PER_SOL, PUMP_PROGRAM, SolanaClient
 from pumpfun_sdk.transaction import build_buy_transaction, build_sell_transaction
 from pumpfun_sdk.utils import process_bonding_curve_state
 

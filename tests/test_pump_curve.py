@@ -1,10 +1,11 @@
 import pytest
+
+from pumpfun_sdk.config import EXPECTED_DISCRIMINATOR
 from pumpfun_sdk.pump_curve import (
     BondingCurveState,
     calculate_bonding_curve_price,
     calculate_output_amount,
 )
-from pumpfun_sdk.config import EXPECTED_DISCRIMINATOR
 
 
 def create_mock_curve_data():

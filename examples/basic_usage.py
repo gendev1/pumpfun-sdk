@@ -9,14 +9,15 @@ This script demonstrates how to:
 
 import asyncio
 import json
+
 from pumpfun_sdk.client import SolanaClient
+from pumpfun_sdk.idl import load_pump_idl
 from pumpfun_sdk.pump_curve import BondingCurveState
 from pumpfun_sdk.utils import (
-    subscribe_to_events,
-    process_bonding_curve_state,
     monitor_new_tokens,
+    process_bonding_curve_state,
+    subscribe_to_events,
 )
-from pumpfun_sdk.idl import load_pump_idl
 
 
 async def example_check_token_status(mint_address: str):

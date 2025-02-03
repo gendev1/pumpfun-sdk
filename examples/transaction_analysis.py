@@ -9,14 +9,15 @@ This script demonstrates how to:
 """
 
 import asyncio
+
+from pumpfun_sdk.idl import load_pump_idl
 from pumpfun_sdk.transaction import (
-    load_transaction,
     decode_transaction,
-    get_instruction_name,
     get_instruction_discriminator,
+    get_instruction_name,
+    load_transaction,
 )
 from pumpfun_sdk.utils import decode_transaction_from_file
-from pumpfun_sdk.idl import load_pump_idl
 
 
 async def analyze_transaction():

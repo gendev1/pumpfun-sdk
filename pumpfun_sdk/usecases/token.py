@@ -1,15 +1,17 @@
 from typing import Dict, List, Optional
+
 from solders.pubkey import Pubkey
-from pumpfun_sdk.client import SolanaClient
+
 from pumpfun_sdk.analytics import analyze_curve_state
-from pumpfun_sdk.pump_curve import BondingCurveState, calculate_bonding_curve_price
+from pumpfun_sdk.client import SolanaClient
 from pumpfun_sdk.config import (
-    LAMPORTS_PER_SOL,
-    TOKEN_DECIMALS,
-    PUMP_PROGRAM,
     BUY_DISCRIMINATOR,
+    LAMPORTS_PER_SOL,
+    PUMP_PROGRAM,
     SELL_DISCRIMINATOR,
+    TOKEN_DECIMALS,
 )
+from pumpfun_sdk.pump_curve import BondingCurveState, calculate_bonding_curve_price
 
 
 async def get_token_info(mint_address: str) -> Dict:

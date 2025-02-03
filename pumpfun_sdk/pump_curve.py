@@ -1,6 +1,8 @@
 import struct
-from construct import Struct, Int64ul, Flag
-from pumpfun_sdk.config import LAMPORTS_PER_SOL, TOKEN_DECIMALS, EXPECTED_DISCRIMINATOR
+
+from construct import Flag, Int64ul, Struct
+
+from pumpfun_sdk.config import EXPECTED_DISCRIMINATOR, LAMPORTS_PER_SOL, TOKEN_DECIMALS
 
 # Define a basic construct for the bonding curve state data structure.
 BondingCurveStateStruct = Struct(

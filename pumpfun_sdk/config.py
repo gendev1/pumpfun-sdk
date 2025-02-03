@@ -3,8 +3,9 @@ Configuration file for pumpfun-sdk.
 Define endpoints and global addresses used across the SDK.
 """
 import os
-from solders.pubkey import Pubkey
 from hashlib import sha256
+
+from solders.pubkey import Pubkey
 
 # System & pump.fun addresses
 PUMP_PROGRAM = Pubkey.from_string("6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P")

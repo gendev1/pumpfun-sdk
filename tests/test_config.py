@@ -1,9 +1,10 @@
 import pytest
+
 from pumpfun_sdk.config import (
-    set_endpoints,
-    get_endpoints,
     DEFAULT_RPC_ENDPOINT,
     DEFAULT_WSS_ENDPOINT,
+    get_endpoints,
+    set_endpoints,
 )
 
 

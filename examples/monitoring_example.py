@@ -7,6 +7,7 @@ the subscribe_to_events function.
 """
 
 import asyncio
+
 from pumpfun_sdk import PUMP_PROGRAM
 from pumpfun_sdk.utils import subscribe_to_events
 
