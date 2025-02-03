@@ -13,18 +13,16 @@ from pumpfun_sdk import (
     PUMP_PROGRAM,
     LAMPORTS_PER_SOL,
 )
-from pumpfun_sdk.transaction import (
-    build_buy_transaction,
-    build_sell_transaction
-)
+from pumpfun_sdk.transaction import build_buy_transaction, build_sell_transaction
 from pumpfun_sdk.utils import process_bonding_curve_state
+
 
 async def example_buy_tokens(
     buyer_keypair: Keypair,
     mint: Pubkey,
     bonding_curve: Pubkey,
     associated_bonding_curve: Pubkey,
-    amount_sol: float
+    amount_sol: float,
 ):
     """
     Example of buying tokens using the pump.fun protocol
@@ -42,26 +40,27 @@ async def example_buy_tokens(
             mint=mint,
             bonding_curve=bonding_curve,
             associated_bonding_curve=associated_bonding_curve,
-            amount=amount_sol
+            amount=amount_sol,
         )
-        
+
         print("\nTransaction details:")
         print(f"Amount: {amount_sol} SOL")
         print(f"Buyer: {buyer_keypair.pubkey()}")
         print(f"Token Mint: {mint}")
-        
+
         # Here you would sign and send the transaction
         # This is left as an exercise for actual implementation
-        
+
     finally:
         await client.close()
+
 
 async def example_sell_tokens(
     seller_keypair: Keypair,
     mint: Pubkey,
     bonding_curve: Pubkey,
     associated_bonding_curve: Pubkey,
-    token_amount: float
+    token_amount: float,
 ):
     """
     Example of selling tokens using the pump.fun protocol
@@ -79,29 +78,30 @@ async def example_sell_tokens(
             mint=mint,
             bonding_curve=bonding_curve,
             associated_bonding_curve=associated_bonding_curve,
-            amount=token_amount
+            amount=token_amount,
         )
-        
+
         print("\nTransaction details:")
         print(f"Amount: {token_amount} tokens")
         print(f"Seller: {seller_keypair.pubkey()}")
         print(f"Token Mint: {mint}")
-        
+
         # Here you would sign and send the transaction
         # This is left as an exercise for actual implementation
-        
+
     finally:
         await client.close()
+
 
 async def example_transactions():
     # Create test keypair (replace with your actual keypair)
     payer = Keypair()
-    
+
     # Example addresses (replace with actual addresses)
     mint = Pubkey.new_unique()
     bonding_curve = Pubkey.new_unique()
     associated_bonding_curve = Pubkey.new_unique()
-    
+
     # Build buy transaction (0.1 SOL amount)
     print("\n=== Building Buy Transaction ===")
     buy_amount = 0.1
@@ -110,11 +110,11 @@ async def example_transactions():
         mint=mint,
         bonding_curve=bonding_curve,
         associated_bonding_curve=associated_bonding_curve,
-        amount=buy_amount
+        amount=buy_amount,
     )
     print(f"Buy transaction built for {buy_amount} SOL:")
     print(buy_tx)
-    
+
     # Build sell transaction (100 token amount)
     print("\n=== Building Sell Transaction ===")
     sell_amount = 100
@@ -123,10 +123,11 @@ async def example_transactions():
         mint=mint,
         bonding_curve=bonding_curve,
         associated_bonding_curve=associated_bonding_curve,
-        amount=sell_amount
+        amount=sell_amount,
     )
     print(f"Sell transaction built for {sell_amount} tokens:")
     print(sell_tx)
+
 
 async def main():
     try:
@@ -134,5 +135,6 @@ async def main():
     except Exception as e:
         print(f"Error: {e}")
 
+
 if __name__ == "__main__":
-    asyncio.run(main()) 
+    asyncio.run(main())

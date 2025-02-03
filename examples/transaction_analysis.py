@@ -13,16 +13,17 @@ from pumpfun_sdk.transaction import (
     load_transaction,
     decode_transaction,
     get_instruction_name,
-    get_instruction_discriminator
+    get_instruction_discriminator,
 )
 from pumpfun_sdk.utils import decode_transaction_from_file
 from pumpfun_sdk.idl import load_pump_idl
+
 
 async def analyze_transaction():
     # Replace these with the actual paths to your files.
     tx_file = "path/to/transaction.json"
     idl_file = "path/to/idl.json"
-    
+
     print("\n=== Analyzing Transaction ===")
     try:
         # This function will use the custom IDL file if provided,
@@ -31,11 +32,13 @@ async def analyze_transaction():
     except Exception as e:
         print(f"Error analyzing transaction: {e}")
 
+
 async def main():
     try:
         await analyze_transaction()
     except Exception as e:
         print(f"Error: {e}")
 
+
 if __name__ == "__main__":
-    asyncio.run(main()) 
+    asyncio.run(main())

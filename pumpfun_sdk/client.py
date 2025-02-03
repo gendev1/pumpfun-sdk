@@ -2,6 +2,7 @@ import asyncio
 from solana.rpc.async_api import AsyncClient
 from pumpfun_sdk.config import RPC_ENDPOINT
 
+
 class SolanaClient:
     """A wrapper around the AsyncClient for simplified usage."""
 
@@ -18,6 +19,7 @@ class SolanaClient:
     async def close(self):
         await self.client.close()
 
+
 # Example usage (this logic can be invoked in an example script)
 # async def main():
 #     client = SolanaClient()
@@ -26,4 +28,4 @@ class SolanaClient:
 #     await client.close()
 #
 # if __name__ == "__main__":
-#     asyncio.run(main()) 
+#     asyncio.run(main())
