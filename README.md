@@ -1,3 +1,9 @@
+[![Test](https://github.com/gendev1/pumpfun-sdk/actions/workflows/test.yml/badge.svg)](https://github.com/gendev1/pumpfun-sdk/actions/workflows/test.yml)
+[![PyPI version](https://badge.fury.io/py/pumpfun-sdk.svg)](https://badge.fury.io/py/pumpfun-sdk)
+[![codecov](https://codecov.io/gh/gendev1/pumpfun-sdk/branch/main/graph/badge.svg)](https://codecov.io/gh/gendev1/pumpfun-sdk)
+[![Python Versions](https://img.shields.io/pypi/pyversions/pumpfun-sdk.svg)](https://pypi.org/project/pumpfun-sdk/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 # PumpFun SDK
 
 PumpFun SDK is a Python toolkit for interacting with the Pump.fun protocol on the Solana blockchain. This SDK provides modules for building transactions, monitoring on-chain events, decoding transactions with IDL support, and analyzing bonding curve states.
@@ -16,6 +22,7 @@ PumpFun SDK is a Python toolkit for interacting with the Pump.fun protocol on th
 -   [Examples](#examples)
 -   [Development](#development)
 -   [Contributing](#contributing)
+-   [CI/CD](#cicd)
 -   [License](#license)
 
 ## Features
@@ -34,6 +41,18 @@ Install the SDK using pip:
 ```bash
 pip install pumpfun-sdk
 ```
+
+Or install with Poetry:
+
+```bash
+poetry add pumpfun-sdk
+```
+
+## Requirements
+
+-   Python 3.8 or higher
+-   Solana wallet (for transaction signing)
+-   Solana RPC endpoint (defaults to mainnet-beta)
 
 ## Quick Start
 
@@ -340,7 +359,13 @@ Detailed examples can be found in the `examples/` directory:
     cd pumpfun-sdk
     ```
 
-2. **Install Dependencies:**
+2. **Install Poetry** (if not already installed):
+
+    ```bash
+    curl -sSL https://install.python-poetry.org | python3 -
+    ```
+
+3. **Install Dependencies:**
 
     ```bash
     poetry install
@@ -354,24 +379,83 @@ Run the test suite and check coverage:
 poetry run pytest --cov=pumpfun_sdk --cov-report=term-missing
 ```
 
+### Code Style
+
+We use `black`, `isort`, and `flake8` for code formatting and linting:
+
+```bash
+# Format code
+poetry run black .
+poetry run isort .
+
+# Check style
+poetry run flake8 .
+```
+
 ## Contributing
 
 Contributions are welcome! To contribute:
 
-1. Fork the repository.
+1. Fork the repository
 2. Create your feature branch:
     ```bash
     git checkout -b feature/your-feature
     ```
-3. Commit your changes:
+3. Make your changes and ensure tests pass:
+    ```bash
+    poetry run pytest
+    ```
+4. Commit your changes:
     ```bash
     git commit -m 'Add feature'
     ```
-4. Push your branch:
+5. Push your branch:
     ```bash
     git push origin feature/your-feature
     ```
-5. Open a Pull Request.
+6. Open a Pull Request
+
+## CI/CD
+
+We use GitHub Actions for continuous integration and deployment:
+
+-   **Testing**: Automatically runs on every push and pull request
+
+    -   Runs test suite on Python 3.8, 3.9, 3.10, and 3.11
+    -   Checks code formatting and style
+    -   Reports test coverage to Codecov
+
+-   **Publishing**: Automatically triggers on new releases
+    -   Builds the package
+    -   Publishes to PyPI
+    -   Creates GitHub release with build artifacts
+
+### Creating a New Release
+
+1. Update version:
+
+    ```bash
+    poetry version patch  # or minor/major
+    ```
+
+2. Commit changes:
+
+    ```bash
+    git add pyproject.toml
+    git commit -m "Bump version to $(poetry version -s)"
+    git push
+    ```
+
+3. Create a new release on GitHub
+    - Go to Releases → Draft a new release
+    - Create a new tag (e.g., v0.1.1)
+    - Publish release
+
+The publish workflow will automatically:
+
+-   Build the package
+-   Publish to PyPI
+-   Attach build artifacts to the release
 
 ## License
 

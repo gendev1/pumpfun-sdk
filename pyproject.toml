@@ -1,26 +1,53 @@
 [tool.poetry]
 name = "pumpfun-sdk"
 version = "0.1.0"
-description = "SDK for pump.fun"
-authors = ["Generalist Dev <hello@generalist.dev>"]
+description = "Python SDK for interacting with the Pump.fun protocol on Solana blockchain"
+authors = ["Your Name <your.email@example.com>"]
+license = "MIT"
 readme = "README.md"
-packages = [{include = "pumpfun_sdk"}]
+homepage = "https://github.com/gendev1/pumpfun-sdk"
+repository = "https://github.com/gendev1/pumpfun-sdk"
+documentation = "https://github.com/gendev1/pumpfun-sdk#readme"
+keywords = ["solana", "blockchain", "pump.fun", "trading", "sdk"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+packages = [
+    { include = "pumpfun_sdk" }
+]
 
 [tool.poetry.dependencies]
-python = "^3.11"
-solders = "*"
-solana = "^0.36.3"
-websockets = ">=9.0,<=13.1"
-construct = "2.10.68"
-construct-typing = ">=0.5.2,<0.6.0"
+python = "^3.8"
+solders = "^0.19.0"
+construct = "^2.10.0"
 asyncio = "^3.4.3"
-base58 = "^2.1.1"
+aiohttp = "^3.8.0"
+websockets = "^10.0"
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^7.4.0"
-pytest-asyncio = "^0.21.1"
-pytest-cov = "^4.0.0"
+pytest = "^7.0"
+pytest-cov = "^4.0"
+pytest-asyncio = "^0.21.0"
+black = "^23.0"
+isort = "^5.12"
+flake8 = "^6.0"
 
 [build-system]
-requires = ["poetry-core"]
+requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 88
+target-version = ['py38']
+include = '\.pyi?$'
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
