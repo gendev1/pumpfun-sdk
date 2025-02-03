@@ -25,7 +25,7 @@ packages = [
 
 [tool.poetry.dependencies]
 python = "^3.11"
-solana = "0.23.0"
+solana = "0.36.3"
 solders = "^0.23.0"
 construct = "^2.10.0"
 asyncio = "^3.4.3"
