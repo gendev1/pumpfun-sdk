@@ -379,18 +379,6 @@ Run the test suite and check coverage:
 poetry run pytest --cov=pumpfun_sdk --cov-report=term-missing
 ```
 
-### Code Style
-
-We use `black`, `isort`, and `flake8` for code formatting and linting:
-
-```bash
-# Format code
-poetry run black .
-poetry run isort .
-
-# Check style
-poetry run flake8 .
-```
 
 ## Contributing
 
@@ -422,7 +410,6 @@ We use GitHub Actions for continuous integration and deployment:
 -   **Testing**: Automatically runs on every push and pull request
 
     -   Runs test suite on Python 3.8, 3.9, 3.10, and 3.11
-    -   Checks code formatting and style
     -   Reports test coverage to Codecov
 
 -   **Publishing**: Automatically triggers on new releases

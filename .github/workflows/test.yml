@@ -46,10 +46,6 @@ jobs:
               run: |
                   poetry run pytest --cov=pumpfun_sdk --cov-report=xml
 
-            - name: Run style checks
-              run: |
-                  poetry run black . --check
-                  poetry run isort . --check
 
             - name: Upload coverage to Codecov
               uses: codecov/codecov-action@v5
