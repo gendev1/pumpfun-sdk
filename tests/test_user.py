@@ -1,5 +1,7 @@
 import types
 from solders.pubkey import Pubkey
+import pytest
+from unittest.mock import AsyncMock, patch
 
 from pumpfun_sdk.usecases.user import _extract_mint_address
 
@@ -57,6 +59,11 @@ from pumpfun_sdk.usecases.user import (
     _is_sell_tx,
     _is_token_creation_tx,
     _get_transaction_type,
+    get_user_created_tokens,
+    get_user_bought_tokens,
+    get_user_sold_tokens,
+    get_user_liquidity,
+    get_user_transactions,
 )
 
 
@@ -130,3 +137,83 @@ def test_get_transaction_type_no_instructions():
         transaction=types.SimpleNamespace(message=types.SimpleNamespace(instructions=[]))
     )
     assert _get_transaction_type(tx) == "other"
+
+@pytest.mark.asyncio
+async def test_get_user_created_tokens():
+    tx = types.SimpleNamespace(block_time=1, meta=types.SimpleNamespace(err=None))
+    with patch("pumpfun_sdk.usecases.user.SolanaClient") as MockClient, \
+         patch("pumpfun_sdk.usecases.user._is_token_creation_tx", return_value=True), \
+         patch("pumpfun_sdk.usecases.user._extract_mint_address", return_value="mint"), \
+         patch("pumpfun_sdk.usecases.user.get_token_info", new_callable=AsyncMock, return_value={"name": "t"}), \
+         patch("pumpfun_sdk.usecases.user.Pubkey.from_string", return_value=Pubkey.new_unique()):
+        instance = MockClient.return_value
+        instance.get_signatures_for_address = AsyncMock(return_value=[types.SimpleNamespace(signature="sig")])
+        instance.get_parsed_transaction = AsyncMock(return_value=tx)
+        instance.close = AsyncMock()
+        result = await get_user_created_tokens("addr")
+        assert result[0]["name"] == "t"
+        instance.close.assert_awaited_once()
+
+@pytest.mark.asyncio
+async def test_get_user_bought_tokens():
+    tx = types.SimpleNamespace(block_time=1, meta=types.SimpleNamespace(err=None))
+    with patch("pumpfun_sdk.usecases.user.SolanaClient") as MockClient, \
+         patch("pumpfun_sdk.usecases.user._is_buy_tx", return_value=True), \
+         patch("pumpfun_sdk.usecases.user._extract_mint_address", return_value="mint"), \
+         patch("pumpfun_sdk.usecases.user.get_token_info", new_callable=AsyncMock, return_value={"name": "t"}), \
+         patch("pumpfun_sdk.usecases.user._extract_buy_amounts", return_value=(1.0, 2.0)), \
+         patch("pumpfun_sdk.usecases.user.Pubkey.from_string", return_value=Pubkey.new_unique()):
+        instance = MockClient.return_value
+        instance.get_signatures_for_address = AsyncMock(return_value=[types.SimpleNamespace(signature="sig")])
+        instance.get_parsed_transaction = AsyncMock(return_value=tx)
+        instance.close = AsyncMock()
+        result = await get_user_bought_tokens("addr")
+        assert result[0]["total_amount"] == 1.0
+        instance.close.assert_awaited_once()
+
+@pytest.mark.asyncio
+async def test_get_user_sold_tokens():
+    tx = types.SimpleNamespace(block_time=1, meta=types.SimpleNamespace(err=None))
+    with patch("pumpfun_sdk.usecases.user.SolanaClient") as MockClient, \
+         patch("pumpfun_sdk.usecases.user._is_sell_tx", return_value=True), \
+         patch("pumpfun_sdk.usecases.user._extract_mint_address", return_value="mint"), \
+         patch("pumpfun_sdk.usecases.user.get_token_info", new_callable=AsyncMock, return_value={"name": "t"}), \
+         patch("pumpfun_sdk.usecases.user._extract_sell_amounts", return_value=(3.0, 4.0)), \
+         patch("pumpfun_sdk.usecases.user.Pubkey.from_string", return_value=Pubkey.new_unique()):
+        instance = MockClient.return_value
+        instance.get_signatures_for_address = AsyncMock(return_value=[types.SimpleNamespace(signature="sig")])
+        instance.get_parsed_transaction = AsyncMock(return_value=tx)
+        instance.close = AsyncMock()
+        result = await get_user_sold_tokens("addr")
+        assert result[0]["total_amount"] == 3.0
+        instance.close.assert_awaited_once()
+
+@pytest.mark.asyncio
+async def test_get_user_liquidity():
+    account = types.SimpleNamespace(data=types.SimpleNamespace(mint="mint", amount=10**TOKEN_DECIMALS))
+    with patch("pumpfun_sdk.usecases.user.SolanaClient") as MockClient, \
+         patch("pumpfun_sdk.usecases.user.get_token_info", new_callable=AsyncMock, return_value={"name": "t"}), \
+         patch("pumpfun_sdk.usecases.user.get_token_price", new_callable=AsyncMock, return_value=2.0):
+        instance = MockClient.return_value
+        instance.get_token_accounts_by_owner = AsyncMock(return_value=[account])
+        instance.close = AsyncMock()
+        result = await get_user_liquidity("addr")
+        assert result[0]["value_in_sol"] == 2.0
+        instance.close.assert_awaited_once()
+
+@pytest.mark.asyncio
+async def test_get_user_transactions():
+    tx = types.SimpleNamespace(block_time=1, meta=types.SimpleNamespace(err=None, fee=5000))
+    with patch("pumpfun_sdk.usecases.user.SolanaClient") as MockClient, \
+         patch("pumpfun_sdk.usecases.user._get_transaction_type", return_value="buy"), \
+         patch("pumpfun_sdk.usecases.user._extract_mint_address", return_value="mint"), \
+         patch("pumpfun_sdk.usecases.user._extract_buy_amounts", return_value=(1.0, 0.5)), \
+         patch("pumpfun_sdk.usecases.user.get_token_info", new_callable=AsyncMock, return_value={"name": "t"}), \
+         patch("pumpfun_sdk.usecases.user.Pubkey.from_string", return_value=Pubkey.new_unique()):
+        instance = MockClient.return_value
+        instance.get_signatures_for_address = AsyncMock(return_value=[types.SimpleNamespace(signature="sig")])
+        instance.get_parsed_transaction = AsyncMock(return_value=tx)
+        instance.close = AsyncMock()
+        result = await get_user_transactions("addr")
+        assert result[0]["fee"] == 0.000005
+        instance.close.assert_awaited_once()
