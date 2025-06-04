@@ -174,7 +174,7 @@ async def get_token_liquidity(mint_address: str) -> Dict:
 def _get_transaction_type(tx) -> str:
     """Helper function to determine transaction type."""
     if not tx.transaction.message.instructions:
-        return "unknown"
+        return "other"
 
     program_id = str(tx.transaction.message.instructions[0].program_id)
     if program_id == str(PUMP_PROGRAM):  # Use PUMP_PROGRAM from config

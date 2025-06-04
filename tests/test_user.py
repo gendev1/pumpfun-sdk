@@ -123,3 +123,10 @@ def test_get_transaction_type_variants():
     assert _get_transaction_type(tx_create) == "create"
     tx_other = make_basic_tx(b"randomdata")
     assert _get_transaction_type(tx_other) == "other"
+
+
+def test_get_transaction_type_no_instructions():
+    tx = types.SimpleNamespace(
+        transaction=types.SimpleNamespace(message=types.SimpleNamespace(instructions=[]))
+    )
+    assert _get_transaction_type(tx) == "other"

@@ -35,3 +35,9 @@ def test_get_transaction_type_sell():
 def test_get_transaction_type_other():
     tx = make_tx(b"randomdata")
     assert _get_transaction_type(tx) == "other"
+
+
+def test_get_transaction_type_no_instructions():
+    message = types.SimpleNamespace(instructions=[])
+    tx = types.SimpleNamespace(transaction=types.SimpleNamespace(message=message))
+    assert _get_transaction_type(tx) == "other"

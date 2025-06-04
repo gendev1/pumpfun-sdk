@@ -360,7 +360,7 @@ def _extract_sell_amounts(tx) -> tuple[float, float]:
 def _get_transaction_type(tx) -> str:
     """Helper function to determine transaction type."""
     if not tx.transaction.message.instructions:
-        return "unknown"
+        return "other"
 
     program_id = str(tx.transaction.message.instructions[0].program_id)
     if program_id == str(PUMP_PROGRAM):
