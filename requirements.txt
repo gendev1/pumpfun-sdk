@@ -1,6 +1,6 @@
-   asyncio
-   websockets
-   solana
-   solders
-   construct
-   base58
+asyncio
+websockets
+solana
+solders
+construct
+base58

@@ -312,12 +312,22 @@ def _is_sell_tx(tx) -> bool:
 def _extract_mint_address(tx) -> Optional[str]:
     """Extract mint address from transaction."""
     try:
-        for account in tx.transaction.message.account_keys:
-            # The mint account is typically the 4th account in pump transactions
-            if account.signer == False and account.writable == True:
-                return str(account.pubkey)
+        if not tx.transaction.message.instructions:
+            return None
+
+        instruction = tx.transaction.message.instructions[0]
+
+        # The mint account is expected to be the 4th account (index 3) in Pump
+        # transactions built by this SDK.  The instruction stores indices into
+        # the transaction's account_keys vector, so we look up the mint index
+        # safely and return the corresponding public key.
+        if len(instruction.accounts) > 3:
+            mint_index = instruction.accounts[3]
+            if mint_index < len(tx.transaction.message.account_keys):
+                return str(tx.transaction.message.account_keys[mint_index])
     except Exception:
-        return None
+        pass
+    return None
 
 
 def _extract_buy_amounts(tx) -> tuple[float, float]:
